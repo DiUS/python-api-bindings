@@ -15,5 +15,11 @@ class TestMeaningRecognitionAPI(unittest.TestCase):
 		self.assertEqual(expected_result, result.json)
 		self.assertEquals(u'cat_n_01 veterinarian_n_01', result.variants()[0].__str__())
 
+	def test_recognize_should_return_result_with_percent_sign(self):
+		expected_result = u'[{"terms":[{"term":"black box","lemma":"black_box","word":"black_box","POS":"NN","offset":0,"meanings":[{"definition":"equipment that records information about the performance of an aircraft during flight","meaning":"black_box_n_01"},{"definition":"equipment that records information about the performance of an aircraft during flight","meaning":"black_box_n_01"},{"definition":"equipment that records information about the performance of an aircraft during flight","meaning":"black_box_n_01"}]},{"term":"%","lemma":"%","word":"%","POS":"NNP","offset":10,"meanings":[]},{"term":"failure","lemma":"failure","word":"failure","POS":"NN","offset":12,"meanings":[{"definition":"an act that fails","meaning":"failure_n_01"},{"definition":"an event that does not accomplish its intended purpose","meaning":"failure_n_02"},{"definition":"loss of ability to function normally","meaning":"failure_n_07"}]}],"scores":[0.340135213013422,0.33047046238172023,0.3293943246048579]}]'
+		result = self.api.recognize("black box % failure")
+		self.assertEqual(expected_result, result.json)
+		self.assertEquals(u'black_box_n_01 % failure_n_01', result.variants()[0].__str__())
+
 if __name__ == '__main__':
     unittest.main()
