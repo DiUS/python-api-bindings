@@ -44,7 +44,7 @@ class Sentence(object):
 				score = scores[idx]
 			else:
 				score = 1.0
-			variants.append(Variant(idx, score, []))
+			variants.append(VariantSentence(idx, score, []))
 			
 		for term in self.terms():
 			resolved_terms_for_term = self._term_to_resolved_terms(term, cardinality, scores)
@@ -136,7 +136,7 @@ class Meaning(object):
 	def __str__(self):
 		return self.meaning()
 		
-class Variant(object):
+class VariantSentence(object):
 	def __init__(self, index, score, resolved_terms):
 		self.index = index
 		self.score = score
