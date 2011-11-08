@@ -16,6 +16,26 @@ class DisambiguationResult(object):
 		
 		return sentences
 
+	def variants(self):
+		sentences = self.sentences()
+		
+		list_of_variant_sentence_lists = map(lambda sentence: sentence.variants(), sentences)
+		max_length_of_variant_sentences = max([len(variant_sentences) for variant_sentences in list_of_variant_sentence_lists])
+		
+		padded_list_of_variant_sentence_lists = []
+		for variant_sentences in list_of_variant_sentence_lists:
+			while len(variant_sentences) < max_length_of_variant_sentences: 
+				variant_sentences.append(variant_sentences[0])
+			padded_list_of_variant_sentence_lists.append(variant_sentences) 
+		
+		transposed = map(lambda *row: list(row), *padded_list_of_variant_sentence_lists)
+	
+		variants = []
+		for idx, variant_sentences in enumerate(transposed):
+			variants.append(Variant(idx, variant_sentences))
+			
+		return variants
+
 class Sentence(object):
 	def __init__(self, parsed):
 		self.parsed = parsed
@@ -145,7 +165,14 @@ class VariantSentence(object):
 	def __str__(self):
 		return ' '.join([resolved_term.__str__() for resolved_term in self.resolved_terms])
 	
+class Variant(object):
+	def __init__(self, index, variant_sentences):
+		self.index = index
+		self.sentences = variant_sentences
 
+	def __str__(self):
+		return ' '.join([variant_sentence.__str__() for variant_sentence in self.sentences])
+		
 class ResolvedTerm(object):
 	def __init__(self, term, meaning, score):
 		self.term = term
