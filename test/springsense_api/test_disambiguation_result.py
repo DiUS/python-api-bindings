@@ -154,22 +154,6 @@ class TestSentenceVariantsWithNoMeanings(unittest.TestCase):
 		self.assertEquals(u'Go forth', first_variant.__str__())
 		self.assertEquals(u'Go forth', self.variants[0].__str__())
 
-class TestTextualRepresentationWithEntity(unittest.TestCase):
-
-	def setUp(self):
-		# "Steve Jobs passed away"
-		self.json = u'[{"terms":[{"term":"Sadly","lemma":"sad","word":"Sadly","POS":"RB","offset":0,"meanings":[]},{"term":"Steve Jobs","lemma":"Steve_Jobs","word":"Steve_Jobs","POS":"NNP","offset":6,"meanings":[{"definition":"a human being","meaning":"person_n_01"},{"definition":"a workplace; as in the expression","meaning":"job_n_03"},{"definition":"A person, institution or place name called \'Steve Jobs\'.","meaning":"Steve_Jobs_n_01"}]},{"term":"passed","lemma":"pass","word":"passed","POS":"VBD","offset":17,"meanings":[]},{"term":"away","lemma":"away","word":"away","POS":"RB","offset":24,"meanings":[]}],"scores":[0.33333340921091204,0.33333334712849727,0.33333324366059075]}]'
-		self.result = DisambiguationResult(self.json)
-		self.variants = self.result.variants()
-
-	def test_should_have_one_variant(self):
-		self.assertEqual(3, len(self.variants))
-
-	def test_first_variant_sentence(self):
-		self.assertEquals(u'Sadly Steve Jobs passed away', self.variants[0].__str__())
-		self.assertEquals(u'Sadly job_n_03 passed away', self.variants[1].__str__())
-		self.assertEquals(u'Sadly Steve_Jobs_n_01 passed away', self.variants[2].__str__())
-
 class TestVariantsWithMultipleSentencesOfVariedNumberOfVariants(unittest.TestCase):
 
 	def setUp(self):
@@ -191,6 +175,24 @@ class TestVariantsWithMultipleSentencesOfVariedNumberOfVariants(unittest.TestCas
 		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly grease_n_01 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', self.variants[0].__str__())
 		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly dirt_n_02 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', self.variants[1].__str__())
 		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly grease_n_01 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_01 .', self.variants[2].__str__())
+
+
+class TestTextualRepresentationWithEntity(unittest.TestCase):
+
+	def setUp(self):
+		# "Steve Jobs passed away"
+		self.json = u'[{"terms":[{"term":"Sadly","lemma":"sad","word":"Sadly","POS":"RB","offset":0,"meanings":[]},{"term":"Steve Jobs","lemma":"Steve_Jobs","word":"Steve_Jobs","POS":"NNP","offset":6,"meanings":[{"definition":"a human being","meaning":"person_n_01"},{"definition":"a workplace; as in the expression","meaning":"job_n_03"},{"definition":"A person, institution or place name called \'Steve Jobs\'.","meaning":"Steve_Jobs_n_01"}]},{"term":"passed","lemma":"pass","word":"passed","POS":"VBD","offset":17,"meanings":[]},{"term":"away","lemma":"away","word":"away","POS":"RB","offset":24,"meanings":[]}],"scores":[0.33333340921091204,0.33333334712849727,0.33333324366059075]}]'
+		self.result = DisambiguationResult(self.json)
+		self.variants = self.result.variants()
+
+	def test_should_have_one_variant(self):
+		self.assertEqual(3, len(self.variants))
+
+	def test_first_variant_sentence(self):
+		self.assertEquals(u'Sadly Steve Jobs passed away', self.variants[0].__str__())
+		self.assertEquals(u'Sadly job_n_03 passed away', self.variants[1].__str__())
+		self.assertEquals(u'Sadly Steve_Jobs_n_01 passed away', self.variants[2].__str__())
+
 
 if __name__ == '__main__':
     unittest.main()
