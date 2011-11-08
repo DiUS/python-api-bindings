@@ -129,7 +129,7 @@ class Term(object):
 			meanings.append(Meaning(parsed_meaning))	
 			
 		return meanings
-		
+				
 	def __repr__(self):
 		return self.parsed.__repr__()
 
@@ -149,6 +149,9 @@ class Meaning(object):
 		
 	def meaning(self):
 		return self.parsed["meaning"]
+		
+	def is_entity_type(self):
+		return self.meaning() in ["person_n_01", "association_n_01", "location_n_01"]
 
 	def __repr__(self):
 		return self.parsed.__repr__()
@@ -183,7 +186,7 @@ class ResolvedTerm(object):
 		return "ResolvedTerm(\tterm= %s,\tmeaning= %s,\tscore= %s)" % (self.term.__str__(), self.meaning.__str__(), self.score.__str__())
 
 	def __str__(self):
-		if self.meaning is None: 
+		if (self.meaning is None) or (self.meaning.is_entity_type()): 
 			return self.term.__str__()
 		
 		return self.meaning.__str__()	
