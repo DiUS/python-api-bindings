@@ -193,6 +193,5 @@ class TestTextualRepresentationWithEntity(unittest.TestCase):
 		self.assertEquals(u'Sadly job_n_03 passed away', self.variants[1].__str__())
 		self.assertEquals(u'Sadly Steve_Jobs_n_01 passed away', self.variants[2].__str__())
 
-
 if __name__ == '__main__':
     unittest.main()
