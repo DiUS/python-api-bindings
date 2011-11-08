@@ -43,5 +43,82 @@ class TestDisambiguationResult(unittest.TestCase):
 		self.assertEqual("grease_n_01", meaning.meaning())
 		self.assertEqual("a thick fatty oil (especially one used to lubricate machinery)", meaning.definition())
 		
+class TestSentenceVariantsWithMultipleMeanings(unittest.TestCase):
+
+	def setUp(self):
+		# "Lightly grease the pan with butter or cooking spray."
+		self.json = u'[{"terms":[{"term":"Lightly","lemma":"light","word":"Lightly","POS":"RB","offset":0,"meanings":[]},{"term":"grease","lemma":"grease","word":"grease","POS":"NN","offset":8,"meanings":[{"definition":"a thick fatty oil (especially one used to lubricate machinery)","meaning":"grease_n_01"},{"definition":"the state of being covered with unclean things","meaning":"dirt_n_02"},{"definition":"a thick fatty oil (especially one used to lubricate machinery)","meaning":"grease_n_01"}]},{"term":"the","lemma":"the","word":"the","POS":"DT","offset":15,"meanings":[]},{"term":"pan","lemma":"pan","word":"pan","POS":"NN","offset":19,"meanings":[{"definition":"cooking utensil consisting of a wide metal vessel","meaning":"pan_n_01"},{"definition":"cooking utensil consisting of a wide metal vessel","meaning":"pan_n_01"},{"definition":"cooking utensil consisting of a wide metal vessel","meaning":"pan_n_01"}]},{"term":"with","lemma":"with","word":"with","POS":"IN","offset":23,"meanings":[]},{"term":"butter","lemma":"butter","word":"butter","POS":"NN","offset":28,"meanings":[{"definition":"an edible emulsion of fat globules made by churning milk or cream; for cooking and table use","meaning":"butter_n_01"},{"definition":"an edible emulsion of fat globules made by churning milk or cream; for cooking and table use","meaning":"butter_n_01"},{"definition":"an edible emulsion of fat globules made by churning milk or cream; for cooking and table use","meaning":"butter_n_01"}]},{"term":"or","lemma":"or","word":"or","POS":"CC","offset":35,"meanings":[]},{"term":"cooking","lemma":"cooking","word":"cooking","POS":"JJ","offset":38,"meanings":[{"definition":"the act of preparing something (as food) by the application of heat","meaning":"cooking_n_01"},{"definition":"the act of preparing something (as food) by the application of heat","meaning":"cooking_n_01"},{"definition":"the act of preparing something (as food) by the application of heat","meaning":"cooking_n_01"}]},{"term":"spray","lemma":"spray","word":"spray","POS":"NN","offset":46,"meanings":[{"definition":"a jet of vapor","meaning":"spray_n_06"},{"definition":"a jet of vapor","meaning":"spray_n_06"},{"definition":"a pesticide in suspension or solution; intended for spraying","meaning":"spray_n_01"}]},{"term":".","lemma":".","word":".","POS":".","offset":51,"meanings":[]}],"scores":[0.3550889426044858,0.33551600342819754,0.3093950539673166]}]'
+		self.result = DisambiguationResult(self.json)
+		self.variants = self.result.sentences()[0].variants()
+
+	def test_should_have_three_variants(self):
+		self.assertEqual(3, len(self.variants))
+		
+	def test_first_variant(self):
+		first_variant = self.variants[0]
+		self.assertEqual(10, len(first_variant.resolved_terms))
+
+		grease = first_variant.resolved_terms[1]
+		self.assertEqual("grease_n_01", grease.meaning.meaning())
+		self.assertAlmostEqual(0.66, grease.score, 2)
+
+		pan = first_variant.resolved_terms[3]
+		self.assertEqual("pan_n_01", pan.meaning.meaning())
+		self.assertAlmostEqual(1.0, pan.score, 2)
+
+		self.assertEquals(u'Lightly grease_n_01 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', first_variant.__str__())
+
+	def test_second_variant(self):
+		second_variant = self.variants[1]
+		self.assertEqual(10, len(second_variant.resolved_terms))
+
+		dirt = second_variant.resolved_terms[1]
+		self.assertEqual("dirt_n_02", dirt.meaning.meaning())
+		self.assertAlmostEqual(0.335, dirt.score, 2)
+
+		pan = second_variant.resolved_terms[3]
+		self.assertEqual("pan_n_01", pan.meaning.meaning())
+		self.assertAlmostEqual(1.0, pan.score, 2)
+
+		self.assertEquals(u'Lightly dirt_n_02 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', second_variant.__str__())
+
+class TestSentenceVariantsWithOneMeaning(unittest.TestCase):
+
+	def setUp(self):
+		# "Reset the black box"
+		self.json = u'[{"terms":[{"term":"Reset","lemma":"Reset","word":"Reset","POS":"VB","offset":0,"meanings":[{"definition":"device for resetting instruments or controls","meaning":"reset_n_01"}]},{"term":"the","lemma":"the","word":"the","POS":"DT","offset":6,"meanings":[]},{"term":"black box","lemma":"black_box","word":"black_box","POS":"NN","offset":10,"meanings":[{"definition":"equipment that records information about the performance of an aircraft during flight","meaning":"black_box_n_01"}]}],"scores":[1.0]}]'
+		self.result = DisambiguationResult(self.json)
+		self.variants = self.result.sentences()[0].variants()
+
+	def test_should_have_onevariants(self):
+		self.assertEqual(1, len(self.variants))
+
+	def test_first_variant(self):
+		first_variant = self.variants[0]
+		self.assertEqual(3, len(first_variant.resolved_terms))
+
+		black_box = first_variant.resolved_terms[2]
+		self.assertEqual("black_box_n_01", black_box.meaning.meaning())
+		self.assertAlmostEqual(1.0, black_box.score, 2)
+		
+		self.assertEquals(u'reset_n_01 the black_box_n_01', first_variant.__str__())
+
+class TestSentenceVariantsWithNoMeanings(unittest.TestCase):
+
+	def setUp(self):
+		# "Go forth"
+		self.json = u'[{"terms":[{"term":"Go","lemma":"go","word":"Go","POS":"VB","offset":0,"meanings":[]},{"term":"forth","lemma":"forth","word":"forth","POS":"RB","offset":3,"meanings":[]}],"scores":[]}]'
+		self.result = DisambiguationResult(self.json)
+		self.variants = self.result.sentences()[0].variants()
+
+	def test_should_have_onevariants(self):
+		self.assertEqual(1, len(self.variants))
+
+	def test_first_variant(self):
+		first_variant = self.variants[0]
+		self.assertEqual(2, len(first_variant.resolved_terms))
+
+		self.assertEquals(u'Go forth', first_variant.__str__())
+
 if __name__ == '__main__':
     unittest.main()

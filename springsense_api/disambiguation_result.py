@@ -33,6 +33,52 @@ class Sentence(object):
 
 	def scores(self):
 		return self.parsed["scores"]
+		
+	def variants(self):
+		variants = []
+		scores = self.scores()
+		score_count = len(scores)
+		cardinality = max(1, score_count)
+		for idx in range(cardinality):
+			if (idx < score_count):
+				score = scores[idx]
+			else:
+				score = 1.0
+			variants.append(Variant(idx, score, []))
+			
+		for term in self.terms():
+			resolved_terms_for_term = self._term_to_resolved_terms(term, cardinality, scores)
+			for idx, variant in enumerate(variants):
+				variant.resolved_terms.append(resolved_terms_for_term[idx])
+
+		return variants
+		
+	def _term_to_resolved_terms(self, term, cardinality, scores):
+		resolved_terms_for_term = []
+		meanings = term.meanings()
+		num_meanings = len(meanings)
+		if (num_meanings < 1):
+			term_with_no_meanings = ResolvedTerm(term, None, 1.0)
+			for i in range(cardinality):
+				resolved_terms_for_term.append(term_with_no_meanings)
+			return resolved_terms_for_term
+		
+		resolved_terms_by_meaning = {}
+		for i in range(cardinality):
+			meaning = meanings[i % num_meanings]
+			meaning_token = meaning.meaning()
+			if meaning_token in resolved_terms_by_meaning:
+				# Existing resolved term
+				resolved_term = resolved_terms_by_meaning[meaning_token]
+				resolved_term.score = resolved_term.score + scores[i]
+			else:
+				# New resolved term
+				resolved_term = ResolvedTerm(term, meaning, scores[i])
+				resolved_terms_by_meaning[meaning_token] = resolved_term
+		
+			resolved_terms_for_term.append(resolved_term)
+			
+		return resolved_terms_for_term
 
 class Term(object):
 	def __init__(self, parsed):
@@ -63,6 +109,12 @@ class Term(object):
 			meanings.append(Meaning(parsed_meaning))	
 			
 		return meanings
+		
+	def __repr__(self):
+		return self.parsed.__repr__()
+
+	def __str__(self):
+		return self.term()
 
 class Meaning(object):
 	def __init__(self, parsed):
@@ -77,4 +129,34 @@ class Meaning(object):
 		
 	def meaning(self):
 		return self.parsed["meaning"]
+
+	def __repr__(self):
+		return self.parsed.__repr__()
+
+	def __str__(self):
+		return self.meaning()
+		
+class Variant(object):
+	def __init__(self, index, score, resolved_terms):
+		self.index = index
+		self.score = score
+		self.resolved_terms = resolved_terms
+
+	def __str__(self):
+		return ' '.join([resolved_term.__str__() for resolved_term in self.resolved_terms])
 	
+
+class ResolvedTerm(object):
+	def __init__(self, term, meaning, score):
+		self.term = term
+		self.meaning = meaning
+		self.score = score
+
+	def __repr__(self):
+		return "ResolvedTerm(\tterm= %s,\tmeaning= %s,\tscore= %s)" % (self.term.__str__(), self.meaning.__str__(), self.score.__str__())
+
+	def __str__(self):
+		if self.meaning is None: 
+			return self.term.__str__()
+		
+		return self.meaning.__str__()	
