@@ -174,7 +174,7 @@ class TestVariantsWithMultipleSentencesOfVariedNumberOfVariants(unittest.TestCas
 	def test_variant_strings(self):
 		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly grease_n_01 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', self.variants[0].__str__())
 		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly dirt_n_02 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', self.variants[1].__str__())
-		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly dirt_n_02 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_06 .', self.variants[2].__str__())
+		self.assertEqual(u'Go forth . reset_n_01 the black_box_n_01 . Lightly grease_n_01 the pan_n_01 with butter_n_01 or cooking_n_01 spray_n_01 .', self.variants[2].__str__())
 
 if __name__ == '__main__':
     unittest.main()
