@@ -27,5 +27,9 @@ class TestMeaningRecognitionAPI(unittest.TestCase):
 		self.assertEqual(expected_result, result.json)
 		self.assertEquals(u'black_box_n_01 \u2013 was here', result.variants()[0].__str__())
 
+	def test_unicode(self):
+		text = ('10 - 14.99 per hour' + chr(0xe2)).decode("latin1")
+		self.assertEquals('10 - 14.99 per hour\xc3\xa2', text.encode("utf-8"))
+
 if __name__ == '__main__':
     unittest.main()

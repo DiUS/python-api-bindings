@@ -11,7 +11,7 @@ class MeaningRecognitionAPI(object):
 		self.quote = quote
     
 	def recognize(self, text_to_recognize):
-		text = text_to_recognize.encode('utf-8')
+		text = text_to_recognize.encode("utf-8")
 		if (self.quote):
 			text = quote(text)
 		result = self.connection.request_post("/disambiguate", args={}, body=text, headers={'Accept':'text/json'})
