@@ -26,6 +26,13 @@ class TestMeaningRecognitionAPI(unittest.TestCase):
 		result = self.api.recognize(u'black box \u2013 was here')
 		self.assertEqual(expected_result, result.json)
 		self.assertEquals(u'black_box_n_01 \u2013 was here', result.variants()[0].__str__())
+#u"'<HTML>\xe2\x80\xa2 0.8 FTE Locum position for 6 months to cover sabbatical leave"
+
+	def test_recognize_should_work_with_unicode_characters_2(self):
+		expected_result = u'[{"terms":[{"term":"\'","lemma":"\'","word":"\'","POS":"\'","offset":0,"meanings":[]},{"term":"\xe2\x80\xa2","lemma":"\xe2\x80\xa2","word":"\xe2\x80\xa2","POS":"NN","offset":1,"meanings":[]},{"term":"position","lemma":"position","word":"position","POS":"NN","offset":5,"meanings":[{"definition":"the particular portion of space occupied by something","meaning":"position_n_01"},{"definition":"a point occupied by troops for tactical reasons","meaning":"military_position_n_01"},{"definition":"a way of regarding situations or topics etc.","meaning":"position_n_03"}]}],"scores":[0.33333333605490495,0.3333333333872207,0.33333333055787434]}]'
+		result = self.api.recognize(u"'\xe2\x80\xa2 position")
+		self.assertEqual(expected_result, result.json)
+		self.assertEquals(u"' \xe2\x80\xa2 position_n_01", unicode(result.variants()[0]))
 
 	def test_unicode(self):
 		text = ('10 - 14.99 per hour' + chr(0xe2)).decode("latin1")
