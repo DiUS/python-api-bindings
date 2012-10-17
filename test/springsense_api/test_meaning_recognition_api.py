@@ -4,10 +4,12 @@ from springsense_api.meaning_recognition_api import MeaningRecognitionAPI
 class TestMeaningRecognitionAPI(unittest.TestCase):
 	
 	def setUp(self):
-		self.api = MeaningRecognitionAPI("http://api.springsense.com")
+		self.api = MeaningRecognitionAPI("http://api.springsense.com:8081", "0b331fdb", "c1f02a931ae759f8d6584812ef9e1859")
 		
 	def test_should_initialize_correctly(self):
-		self.assertEquals("http://api.springsense.com", self.api.url)
+		self.assertEquals("http://api.springsense.com:8081", self.api.url)
+		self.assertEquals("0b331fdb", self.api.app_id)
+		self.assertEquals("c1f02a931ae759f8d6584812ef9e1859", self.api.app_key)
 
 	def test_recognize_should_return_result(self):
 		expected_result = u'[{"terms":[{"term":"cat","lemma":"cat","word":"cat","POS":"NN","offset":0,"meanings":[{"definition":"feline mammal usually having thick soft fur and no ability to roar: domestic cats; wildcats","meaning":"cat_n_01"},{"definition":"any of several large cats typically able to roar and living in the wild","meaning":"big_cat_n_01"},{"definition":"any of several large cats typically able to roar and living in the wild","meaning":"big_cat_n_01"}]},{"term":"vet","lemma":"vet","word":"vet","POS":"NN","offset":4,"meanings":[{"definition":"a doctor who practices veterinary medicine","meaning":"veterinarian_n_01"},{"definition":"a person who has served in the armed forces","meaning":"veteran_n_02"},{"definition":"a doctor who practices veterinary medicine","meaning":"veterinarian_n_01"}]}],"scores":[0.33435383605446267,0.33293809775423155,0.3327080661913058]}]'
